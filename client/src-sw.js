@@ -26,5 +26,20 @@ warmStrategyCache({
 
 registerRoute(({ request }) => request.mode === 'navigate', pageCache);
 
-// TODO: Implement asset caching
-registerRoute();
+// TODO: Implement asset caching.*
+registerRoute(
+   //Defines the callback function that will filter the requests we want; JS and CSS files for this app.
+  ({ request }) => ['style', 'script', 'worker', 'manifest','serviceworker'].includes(request.destination),
+  new CacheFirst({
+    // Name of the cache storage.
+    cacheName: 'asset-cache',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [0, 200],
+      }),
+      new ExpirationPlugin({
+         maxAgeSeconds: 30 * 24 * 60 * 60,
+      }),
+    ],
+  })
+);
